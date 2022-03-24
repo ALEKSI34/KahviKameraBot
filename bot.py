@@ -6,7 +6,11 @@ from time import sleep
 import logging
 import requests
 
+
+
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
+TOKEN = "5290614048:AAEPayajrTQ29Hk7BpEYKovW5AwiviaGCaQ"
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
@@ -51,7 +55,7 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater("5290614048:AAEPayajrTQ29Hk7BpEYKovW5AwiviaGCaQ", use_context=True)
+    updater = Updater(TOKEN, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
