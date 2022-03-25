@@ -9,7 +9,7 @@ import requests
 
 
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
-TOKEN = "5290614048:AAEPayajrTQ29Hk7BpEYKovW5AwiviaGCaQ"
+TOKEN = "INSERT TOKEN HERE"
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
