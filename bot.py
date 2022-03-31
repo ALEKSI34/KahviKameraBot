@@ -9,6 +9,7 @@ import requests
 
 
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
+kahvikamera_local = "coffee.jpg"
 TOKEN = "INSERT TOKEN HERE"
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -30,7 +31,7 @@ def help(update, context):
     sleep(1)
     update.message.reply_text('Tai no... sano /KahviKamera niin saat kuvan kahvikamerasta')
 
-def PostaaKahvi(update,context):
+def PostaaKahviURL(update,context):
     ## Lataillaan kahvikameran kuva, koska jostain helvetin syystä suoraan url postaaminen aiheutti sen, että botti postas jonku pari vuotta vanhan kuvan.
     kahvi_jpg = requests.get(kahvikamera_url)
     if kahvi_jpg.status_code == 200:
@@ -43,6 +44,24 @@ def PostaaKahvi(update,context):
         update.message.reply_photo(open("coffee.jpg",'rb'))
     else:
         update.message.replytext('Kahvi kamera on borke')
+
+def PostaaKahvi(update,context):
+    try:
+        with open(kahvikamera_local, "rb") as kahvikuva:
+            update.message.reply_photo(kahvikuva)
+            kahvikuva.close()
+    except Exception as e:
+        logger.exception(e)
+        PostaaKahviURL(update,context)
+
+def puuliimaa(update,context):
+    try:
+        with open("puuliimaa.jpg","rb") as puuliima:
+            update.message.reply_photo(puuliima)
+            puuliima.close()
+    except Exception as e:
+        logger.exception(e)
+
 
 
 def error(update, context):
@@ -66,6 +85,7 @@ def main():
     dp.add_handler(CommandHandler("KahviKamera",PostaaKahvi))
     dp.add_handler(CommandHandler("onkokiltiksellakahvia",PostaaKahvi))
     dp.add_handler(CommandHandler("kiltiksellakahvia",PostaaKahvi))
+    dp.add_handler(CommandHandler("puuliimaa",puuliimaa))
 
     # log all errors
     dp.add_error_handler(error)
