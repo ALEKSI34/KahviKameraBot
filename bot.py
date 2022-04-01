@@ -5,11 +5,15 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from time import sleep
 import logging
 import requests
+import os, random
 
 
 
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
-TOKEN = "INSERT TOKEN HERE"
+kahvikamera_local = "coffee.jpg"
+puuliimafilu = "puuliimaa.webp"
+V_pendo_dir = "VilppuPosterit"
+TOKEN = "5229496964:AAE0TMMfmpQu5ArgYpBA8BDgW2RSgkJ9EzU"
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -30,7 +34,7 @@ def help(update, context):
     sleep(1)
     update.message.reply_text('Tai no... sano /KahviKamera niin saat kuvan kahvikamerasta')
 
-def PostaaKahvi(update,context):
+def PostaaKahviURL(update,context):
     ## Lataillaan kahvikameran kuva, koska jostain helvetin syystä suoraan url postaaminen aiheutti sen, että botti postas jonku pari vuotta vanhan kuvan.
     kahvi_jpg = requests.get(kahvikamera_url)
     if kahvi_jpg.status_code == 200:
@@ -43,6 +47,32 @@ def PostaaKahvi(update,context):
         update.message.reply_photo(open("coffee.jpg",'rb'))
     else:
         update.message.replytext('Kahvi kamera on borke')
+
+def PostaaKahvi(update,context):
+    try:
+        with open(kahvikamera_local, "rb") as kahvikuva:
+            update.message.reply_photo(kahvikuva)
+            kahvikuva.close()
+    except Exception as e:
+        logger.exception(e)
+        PostaaKahviURL(update,context)
+
+def puuliimaa(update,context):
+    try:
+        with open(puuliimafilu,"rb") as puuliima:
+            update.message.reply_sticker(puuliima)
+            puuliima.close()
+    except Exception as e:
+        logger.exception(e)
+
+def PostaaVilppuPosteri(update,context):
+    try:
+        VPendoFile = random.choice(os.listdir(V_pendo_dir))
+        with open(VPendoFile,"rb") as VilppuPosteri:
+            update.message.reply_photo(VilppuPosteri)
+            VilppuPosteri.close()
+    except Exception as e:
+        logger.exception(e)
 
 
 def error(update, context):
@@ -66,6 +96,8 @@ def main():
     dp.add_handler(CommandHandler("KahviKamera",PostaaKahvi))
     dp.add_handler(CommandHandler("onkokiltiksellakahvia",PostaaKahvi))
     dp.add_handler(CommandHandler("kiltiksellakahvia",PostaaKahvi))
+    dp.add_handler(CommandHandler("puuliimaa",puuliimaa))
+    dp.add_handler(CommandHandler("v_pendo", PostaaVilppuPosteri))
 
     # log all errors
     dp.add_error_handler(error)
