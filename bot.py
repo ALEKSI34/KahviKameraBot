@@ -43,8 +43,6 @@ def PostaaKahviURL(update,context):
         except Exception as e:
             logger.exception(e)
         update.message.reply_photo(open("coffee.jpg",'rb'))
-        if coffeedetection.CheckIfImageHasCoffee("coffee.jpg"):
-            update.message.reply_photo("Kiltiksellä on kahvia.")
     else:
         update.message.replytext('Kahvi kamera on borke')
 
@@ -62,6 +60,8 @@ def KerroKahvi(update,context):
     try:
         if coffeedetection.CheckIfImageHasCoffee(kahvikamera_local):
             update.message.reply_text("Kiltiksellä on kahvia.")
+        else:
+            update.message.reply_text("Kiltiksellä ei ole kahvia.")
     except coffeedetection.CoffeeFileNotFound as e:
         logger.exception(e)
 
