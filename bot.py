@@ -5,8 +5,7 @@ from time import sleep
 import logging
 import requests
 import os, random
-
-
+import coffeedetection
 
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
 kahvikamera_local = "coffee.jpg"
@@ -44,6 +43,8 @@ def PostaaKahviURL(update,context):
         except Exception as e:
             logger.exception(e)
         update.message.reply_photo(open("coffee.jpg",'rb'))
+        if coffeedetection.CheckIfImageHasCoffee("coffee.jpg"):
+            update.message.reply_photo("Kiltiksellä on kahvia.")
     else:
         update.message.replytext('Kahvi kamera on borke')
 
@@ -55,6 +56,14 @@ def PostaaKahvi(update,context):
     except Exception as e:
         logger.exception(e)
         PostaaKahviURL(update,context)
+
+def KerroKahvi(update,context):
+    PostaaKahvi(update,context)
+    try:
+        if coffeedetection.CheckIfImageHasCoffee(kahvikamera_local):
+            update.message.reply_text("Kiltiksellä on kahvia.")
+    except coffeedetection.CoffeeFileNotFound as e:
+        logger.exception(e)
 
 def puuliimaa(update,context):
     try:
@@ -93,7 +102,7 @@ def main():
     dp.add_handler(CommandHandler("moro", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("KahviKamera",PostaaKahvi))
-    dp.add_handler(CommandHandler("onkokiltiksellakahvia",PostaaKahvi))
+    dp.add_handler(CommandHandler("onkokiltiksellakahvia",KerroKahvi))
     dp.add_handler(CommandHandler("kiltiksellakahvia",PostaaKahvi))
     dp.add_handler(CommandHandler("puuliimaa",puuliimaa))
     dp.add_handler(CommandHandler("v_pendo", PostaaVilppuPosteri))
