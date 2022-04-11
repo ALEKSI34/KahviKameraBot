@@ -7,11 +7,14 @@ import requests
 import os, random
 import coffeedetection
 
+tokenfile = "token.txt"
+
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
-kahvikamera_local = "coffee.jpg"
+kahvikamera_local = "/mnt/ram/coffee.jpg"
+TOKEN = "69420"
+
 puuliimafilu = "puuliimaa.webp"
 V_pendo_dir = "V_ImagePool"
-TOKEN = "INSERT TOKEN HERE"
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -89,6 +92,13 @@ def error(update, context):
 
 
 def main():
+    # Read settings from file
+    try:
+        with open(tokenfile, 'r') as f:
+            TOKEN = f.readline().strip()
+    except Exception as e:
+        print(str(e))
+
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
