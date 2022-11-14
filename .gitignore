@@ -1,0 +1,6 @@
+*.code-workspace
+V_ImagePool/
+token.txt
+admins.txt
+SatkyOnlyFeet/
+*.db
