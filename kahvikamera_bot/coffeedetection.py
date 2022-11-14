@@ -7,7 +7,7 @@ import numpy as np
 coffee_color = np.array([15,15,15])
 black = np.array([0,0,0])
 
-kahvipannu_loc = "kahvipannumustavalko2.png"
+kahvipannu_loc = os.path.join(os.getcwd(),"resurssit\\kahvipannumustavalko2.png")
 
 params = cv2.SimpleBlobDetector_Params()
 params.minArea = 100
@@ -15,11 +15,11 @@ params.minArea = 100
 kahvipannu = cv2.imread(kahvipannu_loc,0)
 
 class CoffeeFileNotFound(Exception):
-    def __init__(self, message : str) -> None:
-        super().__init__()
+    ...
 
 
 def CheckIfImageHasCoffee(image_path : str, showimage = False, print_val = False):
+    """Se metodi mikä oikeasti katsoo onko siellä kahvia vai ei"""
     original = cv2.imread(image_path)
     image = cv2.imread(image_path,0)
     edges = cv2.Canny(image,20,200)
