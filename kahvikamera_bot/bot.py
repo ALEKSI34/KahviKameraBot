@@ -16,6 +16,7 @@ kahvikamera_url = "https://www.satky.fi/coffee.jpg"
 kahvikamera_local = "/mnt/ram/coffee.jpg"
 puuliimafilu =  os.path.join(os.getcwd(),"resurssit\\puuliimaa.webp")
 V_pendo_dir = "V_ImagePool"
+banger_dir = "bangerit"
 onlyfeet_dir = "SatkyOnlyFeet"
 TOKEN = "69420"
 
@@ -110,6 +111,7 @@ def PostaaOnlyFeet(update : Update, context : CCT):
 def TuhoaOnlyFeet(update : Update, context : CCT):
     if not update.message.from_user.name in __kahvikamera_admins__:
         update.message.reply_text("Sulla ei oo manaa, voit ostaa lisää manaa Sätkyn kiltahuoneelta!")
+        return
     else:
         logger.info("Adminkomento käyttältä : {}", update.message.from_user.name)
 
@@ -128,7 +130,7 @@ def TuhoaOnlyFeet(update : Update, context : CCT):
             DeleteRowFromDatabase(TuhonUhri)
 
             logger.info("Rivi #{} on tuhottu databasesta", TuhonUhri)
-            update.message.reply_text("Kuva {} tuhottu tietokannasta.")
+            update.message.reply_text(f"Kuva {str(TuhonUhri)} tuhottu tietokannasta.")
 
         except ValueError as e:
             logger.exception(e)
@@ -155,6 +157,17 @@ def UusiOnlyFeet(update : Update, context : CCT):
             context.bot.get_file(update.message.photo[-1].file_id).download(out = f)
             update.message.reply_text("Kuva lisätty Sätkyn OnlyFeet")
             AddCaption(Fname, CaptionMessage, update.message.from_user.full_name)
+    except Exception as e:
+        logger.exception(e)
+
+    
+def PostaaYksBanger(update : Update, context : CCT):
+    try:
+        banger = os.path.join(V_pendo_dir,random.choice(os.listdir(banger_dir)))
+        if banger.endswith(".mp3"):
+            with open(banger,"rb") as bangermp3:
+                update.message.reply_audio(bangermp3)
+                bangermp3.close()
     except Exception as e:
         logger.exception(e)
 
@@ -200,6 +213,9 @@ def botti_idle():
     dp.add_handler(CommandHandler("TuhoaOnlyFeet", TuhoaOnlyFeet))
     dp.add_handler(CommandHandler("AddOnlyFeet",NonkuvaAddOnlyFeet))
     dp.add_handler(MessageHandler(Filters.photo, UusiOnlyFeet))
+
+    # mp3 bangerit
+    dp.add_handler(CommandHandler("banger", PostaaYksBanger))
 
     # log all errors
     dp.add_error_handler(error)
