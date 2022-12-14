@@ -2,18 +2,19 @@
 from time import sleep
 import requests
 import os, random
-from .coffeedetection import CheckIfImageHasCoffee, CoffeeFileNotFound
+from .coffeedetection import CheckIfImageHasCoffee, CoffeeFileNotFound, CheckIfImageHasCoffeeAI
 from .WikiFeetDB.SQLPerkele import AddCaption, GetCaption, GetFileForID, DeleteRowFromDatabase # Siis ihan vittu oikeesti pitää olla joku SQL taulu että voi tallentaa kuvien informaation talteen
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram.ext.utils.types import CCT
 from loguru import logger
+from pathlib import Path
 
 from . import __database_name__, __tokenfile__, __kahvikamera_admins__
 
 kahvikamera_url = "https://www.satky.fi/coffee.jpg"
-kahvikamera_local = "/mnt/ram/coffee.jpg"
+kahvikamera_local = Path("mnt\\ram\\coffee.jpg").absolute()
 puuliimafilu =  os.path.join(os.getcwd(),"resurssit\\puuliimaa.webp")
 V_pendo_dir = "V_ImagePool"
 banger_dir = "bangerit"
@@ -60,10 +61,11 @@ def PostaaKahvi(update : Update, context : CCT):
 def KerroKahvi(update : Update, context : CCT):
     PostaaKahvi(update,context)
     try:
-        if CheckIfImageHasCoffee(kahvikamera_local):
-            update.message.reply_text("Kiltiksellä on kahvia.")
+        HasCoffee, _ = CheckIfImageHasCoffeeAI(kahvikamera_local)
+        if HasCoffee:
+            update.message.reply_text(f"Kiltiksellä on kahvia.")
         else:
-            update.message.reply_text("Kiltiksellä ei ole kahvia.")
+            update.message.reply_text(f"Kiltiksellä ei ole kahvia.")
     except CoffeeFileNotFound as e:
         logger.exception(e)
 

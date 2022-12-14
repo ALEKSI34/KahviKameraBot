@@ -2,12 +2,22 @@
 import cv2
 import os
 import numpy as np
-
+from typing import Tuple, Optional
+from tensorflow import lite # Voi myös käyttää sitä toista tensorflow-runtime kirjastoa raspilla
+from PIL import Image
+from loguru import logger
 
 coffee_color = np.array([15,15,15])
 black = np.array([0,0,0])
 
 kahvipannu_loc = os.path.join(os.getcwd(),"resurssit\\kahvipannumustavalko2.png")
+AI_loc = os.path.join(os.getcwd(),"kahviAI.tflite")
+
+ai_interpreter = lite.Interpreter(model_path=AI_loc)
+ai_interpreter.allocate_tensors()
+input_details = ai_interpreter.get_input_details()
+output_details = ai_interpreter.get_output_details()
+_, height, width, _ = input_details[0]['shape']
 
 params = cv2.SimpleBlobDetector_Params()
 params.minArea = 100
@@ -18,7 +28,40 @@ class CoffeeFileNotFound(Exception):
     ...
 
 
-def CheckIfImageHasCoffee(image_path : str, showimage = False, print_val = False):
+def ClassifyImage(image : Image, top_k=1):
+    np_array= np.expand_dims(np.float32(np.asarray(image)), axis=0)
+    ai_interpreter.set_tensor(input_details[0]['index'], np_array)
+
+    ai_interpreter.invoke()
+
+    predictions = ai_interpreter.get_tensor(output_details[0]['index'])[0]
+
+    if (predictions[0] > 0) and (predictions[1] > 0):
+        if predictions[0] > predictions[1]:
+            return 0, predictions[0]
+        else:
+            return 1, predictions[1]
+    elif predictions[0] > 0:
+        return 0, predictions[0]
+    elif predictions[1] > 0:
+        return 1, predictions[1]
+    else:
+        if predictions[0] > predictions[1]:
+            return 0, predictions[0]
+        else:
+            return 1, predictions[1]
+
+def CheckIfImageHasCoffeeAI(image_path : str) -> Tuple[bool, Optional[float]]:
+    #print(f"Analysoidaan kuvaa.... {image_path}")
+    try:
+        image = Image.open(image_path).convert('RGB').resize((width, height))
+        id, prob = ClassifyImage(image)
+    except Exception as e:
+        logger.exception(e)
+        return False, 100.0
+    return id, round(prob,3)
+
+def CheckIfImageHasCoffee(image_path : str, showimage = False, print_val = False) -> bool:
     """Se metodi mikä oikeasti katsoo onko siellä kahvia vai ei"""
     original = cv2.imread(image_path)
     image = cv2.imread(image_path,0)
