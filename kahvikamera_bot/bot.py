@@ -61,11 +61,11 @@ def PostaaKahvi(update : Update, context : CCT):
 def KerroKahvi(update : Update, context : CCT):
     PostaaKahvi(update,context)
     try:
-        HasCoffee, _ = CheckIfImageHasCoffeeAI(kahvikamera_local)
+        HasCoffee, Probability = CheckIfImageHasCoffeeAI(kahvikamera_local)
         if HasCoffee:
-            update.message.reply_text(f"Kiltiksellä on kahvia.")
+            update.message.reply_text(f"Kiltiksellä on kahvia {Probability}% todennäköisyydellä.")
         else:
-            update.message.reply_text(f"Kiltiksellä ei ole kahvia.")
+            update.message.reply_text(f"Kiltiksellä ei ole kahvia {Probability}% todennäköisyydellä.")
     except CoffeeFileNotFound as e:
         logger.exception(e)
 

@@ -36,20 +36,10 @@ def ClassifyImage(image : Image, top_k=1):
 
     predictions = ai_interpreter.get_tensor(output_details[0]['index'])[0]
 
-    if (predictions[0] > 0) and (predictions[1] > 0):
-        if predictions[0] > predictions[1]:
-            return 0, predictions[0]
-        else:
-            return 1, predictions[1]
-    elif predictions[0] > 0:
-        return 0, predictions[0]
-    elif predictions[1] > 0:
-        return 1, predictions[1]
+    if predictions[0] > 0.5:
+        return True, predictions[0]*100
     else:
-        if predictions[0] > predictions[1]:
-            return 0, predictions[0]
-        else:
-            return 1, predictions[1]
+        return False, 100-(predictions[0]*100)
 
 def CheckIfImageHasCoffeeAI(image_path : str) -> Tuple[bool, Optional[float]]:
     #print(f"Analysoidaan kuvaa.... {image_path}")
