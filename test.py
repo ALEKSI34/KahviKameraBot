@@ -14,7 +14,7 @@ def test():
     print(f"Kuvia : {len(ImagePaths)}")
     for image in ImagePaths:
         id, prob = CheckIfImageHasCoffeeAI(os.path.join(Falses,image))
-        if id != 0:
+        if id != False: 
             ffpos += 1
             print(f"{image} {id} - prob {prob}")
     if ffpos == 0:
@@ -25,7 +25,7 @@ def test():
     print(f"Kuvia : {len(ImagePaths)}")
     for image in ImagePaths:
         id, prob = CheckIfImageHasCoffeeAI(os.path.join(Trues,image))
-        if id != 1:
+        if id != True:
             tfpos += 1
             print(f"{image} :{id} - prob {prob}")
     if tfpos == 0:
