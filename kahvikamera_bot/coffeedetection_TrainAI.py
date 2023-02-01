@@ -51,12 +51,12 @@ model.add(tf.keras.layers.Activation('sigmoid'))
 #model.compile(optimizer="adam",loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), metrics=["accuracy"])
 model.compile(optimizer="rmsprop",loss="binary_crossentropy", metrics=["accuracy"])
 
-epochs= 10
-max_loop = 50
+epochs= 5
+max_loop = 25
 for seed in range(0,max_loop): # Vaihdellaan datasettiä aina välillä :D
   print(f"Swapping dataset... Loop {seed} of {max_loop}")
-  train_ds = tf.keras.utils.image_dataset_from_directory(datadir, seed=seed,validation_split=0.8, subset="training")
-  val_ds = tf.keras.utils.image_dataset_from_directory(datadir, seed=seed+1,validation_split=0.2,subset="validation")
+  train_ds = tf.keras.utils.image_dataset_from_directory(datadir, seed=seed,validation_split=0.75, subset="training")
+  val_ds = tf.keras.utils.image_dataset_from_directory(datadir, seed=seed+1,validation_split=0.05,subset="validation")
 
   history = model.fit( train_ds, validation_data= val_ds,epochs=epochs)
 
