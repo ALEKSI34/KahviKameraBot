@@ -35,7 +35,6 @@ def ClassifyImage(image : Image, top_k=1):
     ai_interpreter.invoke()
 
     predictions = ai_interpreter.get_tensor(output_details[0]['index'])[0]
-
     if predictions[0] > 0.5:
         return True, predictions[0]*100
     else:
